@@ -10,11 +10,14 @@ let currentAddingMarker = null;
 
 // DOM Elements
 const addPoiBtn = document.getElementById('add-poi-btn');
+const locateBtn = document.getElementById('locate-btn');
 const poiPanel = document.getElementById('poi-panel');
 const detailPanel = document.getElementById('detail-panel');
 const poiForm = document.getElementById('poi-form');
 const cancelBtn = document.getElementById('cancel-btn');
 const closeDetailBtn = document.getElementById('close-detail-btn');
+
+let userLocationMarker = null;
 
 // Initialize Map
 function initMap() {
@@ -30,8 +33,37 @@ function initMap() {
     }).addTo(map);
 
     map.on('click', onMapClick);
+    map.on('locationfound', onLocationFound);
+    map.on('locationerror', onLocationError);
     loadPOIs();
 }
+
+function onLocationFound(e) {
+    const radius = e.accuracy / 2;
+
+    if (userLocationMarker) {
+        map.removeLayer(userLocationMarker);
+    }
+
+    userLocationMarker = L.marker(e.latlng, {
+        icon: L.divIcon({
+            className: 'user-location-dot',
+            iconSize: [15, 15],
+            iconAnchor: [7, 7]
+        })
+    }).addTo(map);
+    
+    // Zoom to user location if they are within or near Westerstede
+    map.setView(e.latlng, 16);
+}
+
+function onLocationError(e) {
+    alert("Standort konnte nicht gefunden werden: " + e.message);
+}
+
+locateBtn.addEventListener('click', () => {
+    map.locate({setView: true, maxZoom: 16});
+});
 
 // Map Click Handler (for adding new POI)
 function onMapClick(e) {

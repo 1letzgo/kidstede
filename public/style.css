@@ -106,6 +106,36 @@ body, html, #app {
     transform: rotate(45deg);
 }
 
+.secondary-fab {
+    bottom: 100px;
+    background: white;
+    color: var(--primary);
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+}
+
+.secondary-fab:hover {
+    transform: scale(1.1);
+}
+
+/* User Location Marker */
+.user-location-dot {
+    width: 15px;
+    height: 15px;
+    background: #2196F3;
+    border: 3px solid white;
+    border-radius: 50%;
+    box-shadow: 0 0 0 5px rgba(33, 150, 243, 0.2);
+    animation: pulsate 2s infinite;
+}
+
+@keyframes pulsate {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(33, 150, 243, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(33, 150, 243, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(33, 150, 243, 0); }
+}
+
 /* Panels */
 .panel {
     position: fixed;
