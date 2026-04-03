@@ -33,9 +33,10 @@ body, html, #app {
     top: 20px;
     left: 50%;
     transform: translateX(-50%);
-    width: 90%;
-    max-width: 400px;
-    height: 60px;
+    width: 95%;
+    max-width: 500px;
+    min-height: 50px;
+    padding: 10px 15px;
     background: var(--glass);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
@@ -49,11 +50,23 @@ body, html, #app {
 }
 
 .glass-header h1 {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: 800;
-    background: linear-gradient(45deg, var(--primary), var(--accent));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+    color: var(--primary);
+}
+
+.glass-header h1 .subtitle {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-light);
+    display: block;
+    margin-top: 4px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
 }
 
 /* Map */
