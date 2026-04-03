@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kidstede - Kinderfreundliches Westerstede</title>
+    <meta name="description" content="Entdecke kinderfreundliche Orte in Westerstede mit Kidstede PWA.">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#4a90e2">
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <header class="glass-header">
+            <h1>Kidstede</h1>
+        </header>
+
+        <div id="map"></div>
+
+        <button id="add-poi-btn" class="fab" aria-label="POI hinzufügen">
+            <span class="icon">+</span>
+        </button>
+
+        <!-- Slide-up Panel for Adding POI -->
+        <div id="poi-panel" class="panel glass-panel hidden">
+            <div class="panel-handle"></div>
+            <div class="panel-content">
+                <h2 id="panel-title">Neuen Ort hinzufügen</h2>
+                <p class="instruction">Klicke auf die Karte, um den Standort zu wählen.</p>
+                <form id="poi-form">
+                    <input type="hidden" id="poi-lat" name="lat">
+                    <input type="hidden" id="poi-lng" name="lng">
+                    
+                    <div class="form-group">
+                        <label for="poi-name">Name</label>
+                        <input type="text" id="poi-name" name="name" placeholder="z.B. Abenteuerspielplatz" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="poi-category">Kategorie</label>
+                        <select id="poi-category" name="category">
+                            <option value="Spielplatz">Spielplatz</option>
+                            <option value="Park">Park</option>
+                            <option value="Restaurant">Restaurant / Café</option>
+                            <option value="Aktivität">Aktivität</option>
+                            <option value="Sonstiges">Sonstiges</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="poi-description">Beschreibung</label>
+                        <textarea id="poi-description" name="description" rows="3" placeholder="Was macht diesen Ort toll?"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="poi-photo">Foto hinzufügen</label>
+                        <input type="file" id="poi-photo" name="photo" accept="image/*">
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" id="cancel-btn" class="secondary">Abbrechen</button>
+                        <button type="submit" class="primary">Speichern</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Detail Panel -->
+        <div id="detail-panel" class="panel glass-panel hidden">
+            <div class="panel-handle"></div>
+            <div class="panel-content">
+                <div id="poi-image-container"></div>
+                <h2 id="detail-name"></h2>
+                <div class="category-tag" id="detail-category"></div>
+                <p id="detail-description"></p>
+                <div class="detail-actions">
+                    <button id="close-detail-btn" class="primary">Schließen</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="app.js"></script>
+</body>
+</html>
