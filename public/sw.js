@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kidstede-v2';
+const CACHE_NAME = 'kidstede-v3';
 const ASSETS = [
   '/',
   '/index.html',

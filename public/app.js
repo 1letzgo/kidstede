@@ -16,6 +16,8 @@ const detailPanel = document.getElementById('detail-panel');
 const poiForm = document.getElementById('poi-form');
 const cancelBtn = document.getElementById('cancel-btn');
 const closeDetailBtn = document.getElementById('close-detail-btn');
+const categorySelect = document.getElementById('poi-category');
+const ratingFieldsContainer = document.getElementById('rating-fields-container');
 
 let userLocationMarker = null;
 
@@ -39,21 +41,20 @@ function initMap() {
 }
 
 function onLocationFound(e) {
-    const radius = e.accuracy / 2;
-
     if (userLocationMarker) {
         map.removeLayer(userLocationMarker);
     }
 
+    // Visible pulsing blue dot using inline HTML
     userLocationMarker = L.marker(e.latlng, {
         icon: L.divIcon({
-            className: 'user-location-dot',
-            iconSize: [15, 15],
-            iconAnchor: [7, 7]
+            className: '',
+            html: `<div class="user-location-dot"></div>`,
+            iconSize: [20, 20],
+            iconAnchor: [10, 10]
         })
-    }).addTo(map);
+    }).addTo(map).bindPopup('📍 Dein aktueller Standort');
     
-    // Zoom to user location if they are within or near Westerstede
     map.setView(e.latlng, 16);
 }
 
@@ -94,7 +95,15 @@ function setFormLocation(lat, lng) {
     document.querySelector('.instruction').style.color = "var(--success)";
 }
 
-// Category Colors
+// Category Emojis & Colors
+const CATEGORY_EMOJIS = {
+    'Spielplatz': '🛝',
+    'Park': '🌳',
+    'Restaurant': '🍽️',
+    'Aktivität': '⚽',
+    'Sonstiges': '📍'
+};
+
 const CATEGORY_COLORS = {
     'Spielplatz': '#2ecc71',
     'Park': '#27ae60',
@@ -105,6 +114,10 @@ const CATEGORY_COLORS = {
 
 function getCategoryColor(category) {
     return CATEGORY_COLORS[category] || CATEGORY_COLORS['Sonstiges'];
+}
+
+function getCategoryEmoji(category) {
+    return CATEGORY_EMOJIS[category] || CATEGORY_EMOJIS['Sonstiges'];
 }
 
 // Load POIs from API
@@ -118,13 +131,13 @@ async function loadPOIs() {
         markers = [];
         
         pois.forEach(poi => {
-            const color = getCategoryColor(poi.category);
+            const emoji = getCategoryEmoji(poi.category);
             const marker = L.marker([poi.lat, poi.lng], {
                 icon: L.divIcon({
-                    className: 'custom-div-icon',
-                    html: `<div style='background-color:${color}; width:18px; height:18px; border-radius:50%; border:3px solid white; box-shadow:0 0 8px rgba(0,0,0,0.3);'></div>`,
-                    iconSize: [18, 18],
-                    iconAnchor: [9, 9]
+                    className: 'emoji-marker',
+                    html: `<div class="emoji-marker-inner">${emoji}</div>`,
+                    iconSize: [36, 36],
+                    iconAnchor: [18, 18]
                 })
             }).addTo(map);
             
@@ -136,6 +149,15 @@ async function loadPOIs() {
     }
 }
 
+function renderStars(rating) {
+    if (!rating) return '';
+    let stars = '';
+    for (let i = 1; i <= 5; i++) {
+        stars += i <= rating ? '★' : '☆';
+    }
+    return `<span class="rating-stars">${stars}</span>`;
+}
+
 // Show Detail Panel
 function showDetails(poi) {
     hidePanels();
@@ -144,8 +166,33 @@ function showDetails(poi) {
     
     const categoryTag = document.getElementById('detail-category');
     categoryTag.innerText = poi.category || 'Sonstiges';
-    categoryTag.style.backgroundColor = getCategoryColor(poi.category) + '22'; // 22 is for transparency
+    categoryTag.style.backgroundColor = getCategoryColor(poi.category) + '22';
     categoryTag.style.color = getCategoryColor(poi.category);
+    
+    // Render Ratings
+    const ratingsContainer = document.getElementById('detail-ratings');
+    ratingsContainer.innerHTML = '';
+    
+    if (poi.category === 'Spielplatz') {
+        const ratings = [
+            { label: 'Sauberkeit', value: poi.rating_cleanliness },
+            { label: 'Geräte', value: poi.rating_equipment },
+            { label: 'Größe', value: poi.rating_size },
+            { label: 'Gesamt', value: poi.rating_overall }
+        ];
+        
+        ratings.forEach(r => {
+            if (r.value) {
+                const item = document.createElement('div');
+                item.className = 'rating-item';
+                item.innerHTML = `
+                    <span class="rating-label">${r.label}</span>
+                    ${renderStars(r.value)}
+                `;
+                ratingsContainer.appendChild(item);
+            }
+        });
+    }
     
     const imgContainer = document.getElementById('poi-image-container');
     imgContainer.innerHTML = '';
@@ -227,5 +274,42 @@ if ('serviceWorker' in navigator) {
     });
 }
 
+// Form Logic
+categorySelect.addEventListener('change', () => {
+    if (categorySelect.value === 'Spielplatz') {
+        ratingFieldsContainer.classList.remove('hidden');
+    } else {
+        ratingFieldsContainer.classList.add('hidden');
+    }
+});
+
+// Star Rating Interaction
+document.querySelectorAll('.star-rating .star').forEach(star => {
+    star.addEventListener('click', (e) => {
+        const ratingContainer = e.target.parentElement;
+        const ratingName = ratingContainer.getAttribute('data-rating-name');
+        const value = parseInt(e.target.getAttribute('data-value'));
+        
+        // Update hidden input
+        document.getElementById(ratingName).value = value;
+        
+        // Update star styles
+        const stars = ratingContainer.querySelectorAll('.star');
+        stars.forEach(s => {
+            if (parseInt(s.getAttribute('data-value')) <= value) {
+                s.classList.add('active');
+            } else {
+                s.classList.remove('active');
+            }
+        });
+    });
+});
+
 // Init
-document.addEventListener('DOMContentLoaded', initMap);
+document.addEventListener('DOMContentLoaded', () => {
+    initMap();
+    // Set initial state
+    if (categorySelect.value === 'Spielplatz') {
+        ratingFieldsContainer.classList.remove('hidden');
+    }
+});

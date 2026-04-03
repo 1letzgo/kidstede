@@ -41,14 +41,25 @@ app.get('/api/pois', (req, res) => {
 
 app.post('/api/pois', upload.single('photo'), (req, res) => {
     try {
-        const { name, description, category, lat, lng } = req.body;
+        const { name, description, category, lat, lng, rating_cleanliness, rating_equipment, rating_size, rating_overall } = req.body;
         const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
         
         if (!name || !lat || !lng) {
             return res.status(400).json({ error: 'Name, Latitude and Longitude are required' });
         }
         
-        addPOI(name, description, category, parseFloat(lat), parseFloat(lng), imageUrl);
+        addPOI(
+            name, 
+            description, 
+            category, 
+            parseFloat(lat), 
+            parseFloat(lng), 
+            imageUrl,
+            rating_cleanliness ? parseInt(rating_cleanliness) : null,
+            rating_equipment ? parseInt(rating_equipment) : null,
+            rating_size ? parseInt(rating_size) : null,
+            rating_overall ? parseInt(rating_overall) : null
+        );
         res.status(201).json({ message: 'POI added successfully' });
     } catch (error) {
         res.status(500).json({ error: error.message });

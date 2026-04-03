@@ -19,8 +19,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     
-    <!-- Version 1.0.3 - Branding Update -->
-    <link rel="stylesheet" href="style.css?v=3">
+    <!-- Version 1.1.0 - Emoji Markers -->
+    <link rel="stylesheet" href="style.css?v=5">
 </head>
 <body>
     <div id="app">
@@ -64,6 +64,53 @@
                         </select>
                     </div>
 
+                    <div id="rating-fields-container">
+                        <div class="rating-group">
+                            <label>Sauberkeit</label>
+                            <div class="star-rating" data-rating-name="rating_cleanliness">
+                                <span class="star" data-value="5">★</span>
+                                <span class="star" data-value="4">★</span>
+                                <span class="star" data-value="3">★</span>
+                                <span class="star" data-value="2">★</span>
+                                <span class="star" data-value="1">★</span>
+                            </div>
+                            <input type="hidden" name="rating_cleanliness" id="rating_cleanliness">
+                        </div>
+                        <div class="rating-group">
+                            <label>Spielgeräte</label>
+                            <div class="star-rating" data-rating-name="rating_equipment">
+                                <span class="star" data-value="5">★</span>
+                                <span class="star" data-value="4">★</span>
+                                <span class="star" data-value="3">★</span>
+                                <span class="star" data-value="2">★</span>
+                                <span class="star" data-value="1">★</span>
+                            </div>
+                            <input type="hidden" name="rating_equipment" id="rating_equipment">
+                        </div>
+                        <div class="rating-group">
+                            <label>Größe</label>
+                            <div class="star-rating" data-rating-name="rating_size">
+                                <span class="star" data-value="5">★</span>
+                                <span class="star" data-value="4">★</span>
+                                <span class="star" data-value="3">★</span>
+                                <span class="star" data-value="2">★</span>
+                                <span class="star" data-value="1">★</span>
+                            </div>
+                            <input type="hidden" name="rating_size" id="rating_size">
+                        </div>
+                        <div class="rating-group">
+                            <label>Gesamtbewertung</label>
+                            <div class="star-rating" data-rating-name="rating_overall">
+                                <span class="star" data-value="5">★</span>
+                                <span class="star" data-value="4">★</span>
+                                <span class="star" data-value="3">★</span>
+                                <span class="star" data-value="2">★</span>
+                                <span class="star" data-value="1">★</span>
+                            </div>
+                            <input type="hidden" name="rating_overall" id="rating_overall">
+                        </div>
+                    </div>
+
                     <div class="form-group">
                         <label for="poi-description">Beschreibung</label>
                         <textarea id="poi-description" name="description" rows="3" placeholder="Was macht diesen Ort toll?"></textarea>
@@ -87,9 +134,17 @@
             <div class="panel-handle"></div>
             <div class="panel-content">
                 <div id="poi-image-container"></div>
-                <h2 id="detail-name"></h2>
-                <div class="category-tag" id="detail-category"></div>
-                <p id="detail-description"></p>
+                <div class="detail-header">
+                    <h2 id="detail-name"></h2>
+                    <div class="category-tag" id="detail-category"></div>
+                </div>
+                
+                <div id="detail-ratings" class="ratings-container"></div>
+                
+                <div class="description-container">
+                    <p id="detail-description"></p>
+                </div>
+
                 <div class="detail-actions">
                     <button id="close-detail-btn" class="primary">Schließen</button>
                 </div>
@@ -99,6 +154,6 @@
 
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <script src="app.js"></script>
+    <script src="app.js?v=5"></script>
 </body>
 </html>
