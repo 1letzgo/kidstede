@@ -20,7 +20,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     
     <!-- Version 1.1.0 - Emoji Markers -->
-    <link rel="stylesheet" href="style.css?v=10">
+    <link rel="stylesheet" href="style.css?v=11">
 </head>
 <body>
     <div id="app">
@@ -29,6 +29,10 @@
         </header>
 
         <div id="map"></div>
+
+        <button id="list-btn" class="fab list-fab" aria-label="Alle Orte anzeigen">
+            <span class="icon">☰</span>
+        </button>
 
         <button id="locate-btn" class="fab secondary-fab" aria-label="Meinen Standort finden">
             <span class="icon">🎯</span>
@@ -40,6 +44,15 @@
         <button id="logout-btn" class="fab logout-fab" style="display:none" aria-label="Abmelden" title="Abmelden">
             <span class="icon">🔓</span>
         </button>
+
+        <!-- List Panel -->
+        <div id="list-panel" class="panel glass-panel hidden">
+            <div class="panel-handle"></div>
+            <div class="panel-content">
+                <h2>Alle Orte</h2>
+                <div id="list-content"></div>
+            </div>
+        </div>
 
         <!-- Slide-up Panel for Adding POI -->
         <div id="poi-panel" class="panel glass-panel hidden">
@@ -182,6 +195,6 @@
 
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <script src="app.js?v=10"></script>
+    <script src="app.js?v=11"></script>
 </body>
 </html>
