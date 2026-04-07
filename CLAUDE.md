@@ -55,4 +55,4 @@ The Leaflet map is constrained to Westerstede region: `53.18–53.33°N`, `7.78�
 ### Deployment
 Docker (Node.js 20-slim). Build tools (`python3`, `make`, `g++`) are installed in the image to compile `better-sqlite3` native bindings. Port 3000 is exposed.
 
-When updating cached assets, increment the cache version in `public/sw.js` (e.g., `kidstede-v3` → `kidstede-v4`).
+The Service Worker (`public/sw.js`) does **not** cache assets — all requests go directly to the network so updates reach users immediately.
