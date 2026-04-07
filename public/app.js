@@ -8,6 +8,7 @@ const CENTER = [53.2573, 7.9284];
 let map, markers = [];
 let currentAddingMarker = null;
 let currentPoiId = null;
+let currentPoi = null;
 let isAdmin = false;
 
 // DOM Elements
@@ -161,42 +162,40 @@ function renderStars(rating) {
     return `<span class="rating-stars">${stars}</span>`;
 }
 
-// Show Detail Panel
-function showDetails(poi) {
-    hidePanels();
-    currentPoiId = poi.id;
-    document.getElementById('detail-name').innerText = poi.name;
-    document.getElementById('detail-description').innerText = poi.description || 'Keine Beschreibung vorhanden.';
-    
-    const categoryTag = document.getElementById('detail-category');
-    categoryTag.innerText = poi.category || 'Sonstiges';
-    categoryTag.style.backgroundColor = getCategoryColor(poi.category) + '22';
-    categoryTag.style.color = getCategoryColor(poi.category);
-    
-    // Render Ratings
+function renderDetailRatings(poi) {
     const ratingsContainer = document.getElementById('detail-ratings');
     ratingsContainer.innerHTML = '';
-    
     if (poi.category === 'Spielplatz') {
-        const ratings = [
+        [
             { label: 'Sauberkeit', value: poi.rating_cleanliness },
             { label: 'Geräte', value: poi.rating_equipment },
             { label: 'Größe', value: poi.rating_size },
             { label: 'Gesamt', value: poi.rating_overall }
-        ];
-        
-        ratings.forEach(r => {
+        ].forEach(r => {
             if (r.value) {
                 const item = document.createElement('div');
                 item.className = 'rating-item';
-                item.innerHTML = `
-                    <span class="rating-label">${r.label}</span>
-                    ${renderStars(r.value)}
-                `;
+                item.innerHTML = `<span class="rating-label">${r.label}</span>${renderStars(r.value)}`;
                 ratingsContainer.appendChild(item);
             }
         });
     }
+}
+
+// Show Detail Panel
+function showDetails(poi) {
+    hidePanels();
+    currentPoiId = poi.id;
+    currentPoi = poi;
+    document.getElementById('detail-name').innerText = poi.name;
+    document.getElementById('detail-description').innerText = poi.description || 'Keine Beschreibung vorhanden.';
+
+    const categoryTag = document.getElementById('detail-category');
+    categoryTag.innerText = poi.category || 'Sonstiges';
+    categoryTag.style.backgroundColor = getCategoryColor(poi.category) + '22';
+    categoryTag.style.color = getCategoryColor(poi.category);
+
+    renderDetailRatings(poi);
     
     const imgContainer = document.getElementById('poi-image-container');
     imgContainer.innerHTML = '';
@@ -208,38 +207,75 @@ function showDetails(poi) {
     }
     
     // Reset edit mode
-    document.getElementById('detail-description').classList.remove('hidden');
-    document.getElementById('detail-description-edit').classList.add('hidden');
-    document.getElementById('save-poi-btn').classList.add('hidden');
-    document.getElementById('edit-poi-btn').classList.remove('hidden');
+    setEditMode(false);
 
     detailPanel.classList.remove('hidden');
 }
 
+function setEditMode(on) {
+    document.getElementById('detail-description').style.display = on ? 'none' : '';
+    document.getElementById('detail-description-edit').style.display = on ? 'block' : 'none';
+    document.getElementById('detail-ratings').style.display = on ? 'none' : '';
+    document.getElementById('detail-ratings-edit').style.display = (on && currentPoi && currentPoi.category === 'Spielplatz') ? 'block' : 'none';
+    document.getElementById('edit-poi-btn').style.display = (!on && isAdmin) ? '' : 'none';
+    document.getElementById('save-poi-btn').style.display = (on && isAdmin) ? '' : 'none';
+    document.getElementById('delete-poi-btn').style.display = (!on && isAdmin) ? '' : 'none';
+}
+
+// Edit stars interaction
+document.querySelectorAll('.edit-stars .star').forEach(star => {
+    star.addEventListener('click', e => {
+        const container = e.target.closest('.star-rating');
+        const val = parseInt(e.target.dataset.value);
+        container.dataset.selected = val;
+        container.querySelectorAll('.star').forEach(s => {
+            s.classList.toggle('active', parseInt(s.dataset.value) <= val);
+        });
+    });
+});
+
+function initEditRatings(poi) {
+    document.querySelectorAll('.edit-stars').forEach(container => {
+        const key = container.dataset.key;
+        const val = poi[key] || 0;
+        container.dataset.selected = val;
+        container.querySelectorAll('.star').forEach(s => {
+            s.classList.toggle('active', parseInt(s.dataset.value) <= val);
+        });
+    });
+}
+
 // Edit / Delete
 document.getElementById('edit-poi-btn').addEventListener('click', () => {
-    const desc = document.getElementById('detail-description');
-    const textarea = document.getElementById('detail-description-edit');
-    textarea.value = desc.innerText === 'Keine Beschreibung vorhanden.' ? '' : desc.innerText;
-    desc.classList.add('hidden');
-    textarea.classList.remove('hidden');
-    document.getElementById('edit-poi-btn').classList.add('hidden');
-    document.getElementById('save-poi-btn').classList.remove('hidden');
+    const descEl = document.getElementById('detail-description');
+    document.getElementById('detail-description-edit').value =
+        descEl.innerText === 'Keine Beschreibung vorhanden.' ? '' : descEl.innerText;
+    initEditRatings(currentPoi);
+    setEditMode(true);
 });
 
 document.getElementById('save-poi-btn').addEventListener('click', async () => {
     const description = document.getElementById('detail-description-edit').value;
+    const body = { description };
+    document.querySelectorAll('.edit-stars').forEach(container => {
+        const val = parseInt(container.dataset.selected) || null;
+        if (val) body[container.dataset.key] = val;
+    });
+
     const res = await fetch(`/api/pois/${currentPoiId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ description })
+        body: JSON.stringify(body)
     });
     if (res.ok) {
+        // Update local poi object and re-render
+        currentPoi.description = description;
+        document.querySelectorAll('.edit-stars').forEach(c => {
+            currentPoi[c.dataset.key] = parseInt(c.dataset.selected) || null;
+        });
         document.getElementById('detail-description').innerText = description || 'Keine Beschreibung vorhanden.';
-        document.getElementById('detail-description').classList.remove('hidden');
-        document.getElementById('detail-description-edit').classList.add('hidden');
-        document.getElementById('save-poi-btn').classList.add('hidden');
-        document.getElementById('edit-poi-btn').classList.remove('hidden');
+        renderDetailRatings(currentPoi);
+        setEditMode(false);
         loadPOIs();
     } else if (res.status === 401) {
         window.location.href = '/admin';

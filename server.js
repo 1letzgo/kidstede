@@ -104,7 +104,15 @@ app.post('/api/pois', requireAuth, upload.single('photo'), (req, res) => {
 
 app.patch('/api/pois/:id', requireAuth, (req, res) => {
     try {
-        const result = updatePOI(req.params.id, req.body.description ?? '');
+        const { description, rating_cleanliness, rating_equipment, rating_size, rating_overall } = req.body;
+        const result = updatePOI(
+            req.params.id,
+            description ?? '',
+            rating_cleanliness ? parseInt(rating_cleanliness) : null,
+            rating_equipment ? parseInt(rating_equipment) : null,
+            rating_size ? parseInt(rating_size) : null,
+            rating_overall ? parseInt(rating_overall) : null
+        );
         if (result.changes === 0) return res.status(404).json({ error: 'POI nicht gefunden' });
         res.json({ message: 'Aktualisiert' });
     } catch (error) {
