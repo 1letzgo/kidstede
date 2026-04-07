@@ -111,7 +111,7 @@ body, html, #app {
     right: 20px;
     background: white;
     color: var(--text-light);
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
@@ -124,8 +124,6 @@ body, html, #app {
     bottom: 170px;
     background: white;
     color: var(--primary);
-    width: 50px;
-    height: 50px;
     font-size: 1.5rem;
 }
 
@@ -355,6 +353,30 @@ button.primary, button.secondary {
 button.primary {
     background: var(--primary);
     color: white;
+}
+
+button.danger {
+    background: #e74c3c;
+    color: white;
+}
+
+button.danger:hover {
+    background: #c0392b;
+}
+
+.edit-textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1.5px solid #cde0f5;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    resize: vertical;
+    outline: none;
+}
+
+.edit-textarea:focus {
+    border-color: var(--primary);
 }
 
 button.secondary {

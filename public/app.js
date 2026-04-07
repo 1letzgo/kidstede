@@ -7,6 +7,8 @@ const CENTER = [53.2573, 7.9284];
 
 let map, markers = [];
 let currentAddingMarker = null;
+let currentPoiId = null;
+let isAdmin = false;
 
 // DOM Elements
 const addPoiBtn = document.getElementById('add-poi-btn');
@@ -162,6 +164,7 @@ function renderStars(rating) {
 // Show Detail Panel
 function showDetails(poi) {
     hidePanels();
+    currentPoiId = poi.id;
     document.getElementById('detail-name').innerText = poi.name;
     document.getElementById('detail-description').innerText = poi.description || 'Keine Beschreibung vorhanden.';
     
@@ -204,8 +207,55 @@ function showDetails(poi) {
         imgContainer.appendChild(img);
     }
     
+    // Reset edit mode
+    document.getElementById('detail-description').classList.remove('hidden');
+    document.getElementById('detail-description-edit').classList.add('hidden');
+    document.getElementById('save-poi-btn').classList.add('hidden');
+    document.getElementById('edit-poi-btn').classList.remove('hidden');
+
     detailPanel.classList.remove('hidden');
 }
+
+// Edit / Delete
+document.getElementById('edit-poi-btn').addEventListener('click', () => {
+    const desc = document.getElementById('detail-description');
+    const textarea = document.getElementById('detail-description-edit');
+    textarea.value = desc.innerText === 'Keine Beschreibung vorhanden.' ? '' : desc.innerText;
+    desc.classList.add('hidden');
+    textarea.classList.remove('hidden');
+    document.getElementById('edit-poi-btn').classList.add('hidden');
+    document.getElementById('save-poi-btn').classList.remove('hidden');
+});
+
+document.getElementById('save-poi-btn').addEventListener('click', async () => {
+    const description = document.getElementById('detail-description-edit').value;
+    const res = await fetch(`/api/pois/${currentPoiId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ description })
+    });
+    if (res.ok) {
+        document.getElementById('detail-description').innerText = description || 'Keine Beschreibung vorhanden.';
+        document.getElementById('detail-description').classList.remove('hidden');
+        document.getElementById('detail-description-edit').classList.add('hidden');
+        document.getElementById('save-poi-btn').classList.add('hidden');
+        document.getElementById('edit-poi-btn').classList.remove('hidden');
+        loadPOIs();
+    } else if (res.status === 401) {
+        window.location.href = '/admin';
+    }
+});
+
+document.getElementById('delete-poi-btn').addEventListener('click', async () => {
+    if (!confirm('Diesen Ort wirklich löschen?')) return;
+    const res = await fetch(`/api/pois/${currentPoiId}`, { method: 'DELETE' });
+    if (res.ok) {
+        hidePanels();
+        loadPOIs();
+    } else if (res.status === 401) {
+        window.location.href = '/admin';
+    }
+});
 
 // Panel Management
 function hidePanels() {
@@ -312,8 +362,12 @@ document.querySelectorAll('.star-rating .star').forEach(star => {
 async function checkAuth() {
     const res = await fetch('/api/auth-status');
     const { authenticated } = await res.json();
+    isAdmin = authenticated;
     addPoiBtn.style.display = authenticated ? 'flex' : 'none';
     logoutBtn.style.display = authenticated ? 'flex' : 'none';
+    document.querySelectorAll('.admin-only').forEach(el => {
+        el.style.display = authenticated ? '' : 'none';
+    });
 }
 
 logoutBtn.addEventListener('click', async () => {

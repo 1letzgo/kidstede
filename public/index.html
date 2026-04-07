@@ -20,7 +20,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     
     <!-- Version 1.1.0 - Emoji Markers -->
-    <link rel="stylesheet" href="style.css?v=6">
+    <link rel="stylesheet" href="style.css?v=7">
 </head>
 <body>
     <div id="app">
@@ -146,10 +146,14 @@
                 
                 <div class="description-container">
                     <p id="detail-description"></p>
+                    <textarea id="detail-description-edit" class="edit-textarea hidden" rows="4"></textarea>
                 </div>
 
                 <div class="detail-actions">
                     <button id="close-detail-btn" class="primary">Schließen</button>
+                    <button id="edit-poi-btn" class="secondary admin-only" style="display:none">Bearbeiten</button>
+                    <button id="save-poi-btn" class="primary admin-only hidden" style="display:none">Speichern</button>
+                    <button id="delete-poi-btn" class="danger admin-only" style="display:none">Löschen</button>
                 </div>
             </div>
         </div>
@@ -157,6 +161,6 @@
 
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <script src="app.js?v=6"></script>
+    <script src="app.js?v=7"></script>
 </body>
 </html>
