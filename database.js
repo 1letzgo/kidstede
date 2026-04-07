@@ -34,8 +34,23 @@ function addPOI(name, description, category, lat, lng, image_url, ratingCleanlin
     return stmt.run(name, description, category, lat, lng, image_url, ratingCleanliness || null, ratingEquipment || null, ratingSize || null, ratingOverall || null);
 }
 
-function updatePOI(id, description) {
-    return db.prepare('UPDATE pois SET description = ? WHERE id = ?').run(description, id);
+function updatePOI(id, description, ratingCleanliness, ratingEquipment, ratingSize, ratingOverall) {
+    return db.prepare(`
+        UPDATE pois SET
+            description = ?,
+            rating_cleanliness = ?,
+            rating_equipment = ?,
+            rating_size = ?,
+            rating_overall = ?
+        WHERE id = ?
+    `).run(
+        description,
+        ratingCleanliness || null,
+        ratingEquipment || null,
+        ratingSize || null,
+        ratingOverall || null,
+        id
+    );
 }
 
 function deletePOI(id) {

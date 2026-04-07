@@ -20,7 +20,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     
     <!-- Version 1.1.0 - Emoji Markers -->
-    <link rel="stylesheet" href="style.css?v=7">
+    <link rel="stylesheet" href="style.css?v=8">
 </head>
 <body>
     <div id="app">
@@ -141,18 +141,39 @@
                     <h2 id="detail-name"></h2>
                     <div class="category-tag" id="detail-category"></div>
                 </div>
-                
+
+                <!-- Bewertung (Ansicht) -->
                 <div id="detail-ratings" class="ratings-container"></div>
-                
+
+                <!-- Bewertung (Bearbeiten, nur Admin + Spielplatz) -->
+                <div id="detail-ratings-edit" style="display:none">
+                    <div class="rating-group">
+                        <label>Sauberkeit</label>
+                        <div class="star-rating edit-stars" data-key="rating_cleanliness"><span class="star" data-value="1">★</span><span class="star" data-value="2">★</span><span class="star" data-value="3">★</span><span class="star" data-value="4">★</span><span class="star" data-value="5">★</span></div>
+                    </div>
+                    <div class="rating-group">
+                        <label>Spielgeräte</label>
+                        <div class="star-rating edit-stars" data-key="rating_equipment"><span class="star" data-value="1">★</span><span class="star" data-value="2">★</span><span class="star" data-value="3">★</span><span class="star" data-value="4">★</span><span class="star" data-value="5">★</span></div>
+                    </div>
+                    <div class="rating-group">
+                        <label>Größe</label>
+                        <div class="star-rating edit-stars" data-key="rating_size"><span class="star" data-value="1">★</span><span class="star" data-value="2">★</span><span class="star" data-value="3">★</span><span class="star" data-value="4">★</span><span class="star" data-value="5">★</span></div>
+                    </div>
+                    <div class="rating-group">
+                        <label>Gesamtbewertung</label>
+                        <div class="star-rating edit-stars" data-key="rating_overall"><span class="star" data-value="1">★</span><span class="star" data-value="2">★</span><span class="star" data-value="3">★</span><span class="star" data-value="4">★</span><span class="star" data-value="5">★</span></div>
+                    </div>
+                </div>
+
                 <div class="description-container">
                     <p id="detail-description"></p>
-                    <textarea id="detail-description-edit" class="edit-textarea hidden" rows="4"></textarea>
+                    <textarea id="detail-description-edit" class="edit-textarea" style="display:none" rows="4"></textarea>
                 </div>
 
                 <div class="detail-actions">
-                    <button id="close-detail-btn" class="primary">Schließen</button>
-                    <button id="edit-poi-btn" class="secondary admin-only" style="display:none">Bearbeiten</button>
-                    <button id="save-poi-btn" class="primary admin-only hidden" style="display:none">Speichern</button>
+                    <button id="close-detail-btn" class="secondary">Schließen</button>
+                    <button id="edit-poi-btn" class="primary admin-only" style="display:none">Bearbeiten</button>
+                    <button id="save-poi-btn" class="primary admin-only" style="display:none">Speichern</button>
                     <button id="delete-poi-btn" class="danger admin-only" style="display:none">Löschen</button>
                 </div>
             </div>
@@ -161,6 +182,6 @@
 
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <script src="app.js?v=7"></script>
+    <script src="app.js?v=8"></script>
 </body>
 </html>
