@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Kidstede** is a Progressive Web App (PWA) for discovering kid-friendly locations in Westerstede, Germany, built for the SPD Westerstede organization. It is a full-stack Node.js app with no build step — vanilla JS frontend served statically, Express backend, and SQLite database.
+**Ammerino** is a Progressive Web App (PWA) for discovering kid-friendly locations in Westerstede, Germany, built for the SPD Westerstede organization. It is a full-stack Node.js app with no build step — vanilla JS frontend served statically, Express backend, and SQLite database.
 
 ## Commands
 
