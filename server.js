@@ -9,16 +9,20 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'ammerino_admin';
 
+// Persistent data directory
+const dataDir = process.env.DATA_DIR || '/data';
+if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
+
 // Ensure upload directory exists
-const uploadDir = path.join(__dirname, 'uploads');
+const uploadDir = path.join(dataDir, 'uploads');
 if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir);
+    fs.mkdirSync(uploadDir, { recursive: true });
 }
 
 // Multer storage configuration
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads/');
+        cb(null, uploadDir);
     },
     filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -36,7 +40,7 @@ app.use(session({
     cookie: { httpOnly: true, maxAge: 8 * 60 * 60 * 1000 } // 8 Stunden
 }));
 app.use(express.static('public'));
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static(uploadDir));
 
 function requireAuth(req, res, next) {
     if (req.session && req.session.authenticated) return next();
