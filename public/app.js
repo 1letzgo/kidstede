@@ -6,6 +6,7 @@ const WESTERSTEDE_BOUNDS = [
 const CENTER = [53.2573, 7.9284];
 
 let map, markers = [];
+let allPois = [];
 let currentAddingMarker = null;
 let currentPoiId = null;
 let currentPoi = null;
@@ -129,11 +130,12 @@ async function loadPOIs() {
     try {
         const response = await fetch('/api/pois');
         const pois = await response.json();
-        
+        allPois = pois;
+
         // Clear existing markers
         markers.forEach(m => map.removeLayer(m));
         markers = [];
-        
+
         pois.forEach(poi => {
             const emoji = getCategoryEmoji(poi.category);
             const marker = L.marker([poi.lat, poi.lng], {
@@ -144,7 +146,7 @@ async function loadPOIs() {
                     iconAnchor: [18, 18]
                 })
             }).addTo(map);
-            
+
             marker.on('click', () => showDetails(poi));
             markers.push(marker);
         });
@@ -152,6 +154,66 @@ async function loadPOIs() {
         console.error('Error loading POIs:', err);
     }
 }
+
+// List Panel
+const CATEGORY_ORDER = ['Spielplatz', 'Park', 'Restaurant', 'Aktivität', 'Sonstiges'];
+const listPanel = document.getElementById('list-panel');
+const listBtn = document.getElementById('list-btn');
+
+function renderListPanel() {
+    const container = document.getElementById('list-content');
+    container.innerHTML = '';
+
+    if (allPois.length === 0) {
+        container.innerHTML = '<p class="list-empty">Noch keine Orte eingetragen.</p>';
+        return;
+    }
+
+    const grouped = {};
+    allPois.forEach(poi => {
+        const cat = poi.category || 'Sonstiges';
+        if (!grouped[cat]) grouped[cat] = [];
+        grouped[cat].push(poi);
+    });
+
+    const categories = CATEGORY_ORDER.filter(c => grouped[c]).concat(
+        Object.keys(grouped).filter(c => !CATEGORY_ORDER.includes(c))
+    );
+
+    categories.forEach(cat => {
+        const header = document.createElement('div');
+        header.className = 'list-category-header';
+        header.innerHTML = `<span>${getCategoryEmoji(cat)}</span><span>${cat}</span>`;
+        container.appendChild(header);
+
+        grouped[cat].forEach(poi => {
+            const item = document.createElement('div');
+            item.className = 'list-poi-item';
+            const stars = poi.rating_overall ? '★'.repeat(poi.rating_overall) : '';
+            item.innerHTML = `
+                <span>${getCategoryEmoji(poi.category)}</span>
+                <span class="list-poi-name">${poi.name}</span>
+                ${stars ? `<span class="list-poi-stars">${stars}</span>` : ''}
+            `;
+            item.addEventListener('click', () => {
+                hidePanels();
+                map.setView([poi.lat, poi.lng], 16);
+                showDetails(poi);
+            });
+            container.appendChild(item);
+        });
+    });
+}
+
+listBtn.addEventListener('click', () => {
+    if (listPanel.classList.contains('hidden')) {
+        hidePanels();
+        renderListPanel();
+        listPanel.classList.remove('hidden');
+    } else {
+        hidePanels();
+    }
+});
 
 function renderStars(rating) {
     if (!rating) return '';
@@ -297,6 +359,7 @@ document.getElementById('delete-poi-btn').addEventListener('click', async () => 
 function hidePanels() {
     poiPanel.classList.add('hidden');
     detailPanel.classList.add('hidden');
+    if (typeof listPanel !== 'undefined') listPanel.classList.add('hidden');
     addPoiBtn.classList.remove('active');
     if (currentAddingMarker) {
         map.removeLayer(currentAddingMarker);
