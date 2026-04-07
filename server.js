@@ -19,6 +19,17 @@ if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
 }
 
+// Migrate legacy uploads from project directory
+const legacyUploadDir = path.join(__dirname, 'uploads');
+if (fs.existsSync(legacyUploadDir)) {
+    fs.readdirSync(legacyUploadDir).forEach(file => {
+        const dest = path.join(uploadDir, file);
+        if (!fs.existsSync(dest)) {
+            fs.copyFileSync(path.join(legacyUploadDir, file), dest);
+        }
+    });
+}
+
 // Multer storage configuration
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
