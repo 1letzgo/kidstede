@@ -339,7 +339,7 @@ body, html, #app {
     margin-top: 20px;
 }
 
-button.primary, button.secondary {
+button.primary, button.secondary, button.danger {
     padding: 15px 25px;
     border-radius: 15px;
     border: none;

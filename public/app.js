@@ -365,11 +365,7 @@ if ('serviceWorker' in navigator) {
 
 // Form Logic
 categorySelect.addEventListener('change', () => {
-    if (categorySelect.value === 'Spielplatz') {
-        ratingFieldsContainer.classList.remove('hidden');
-    } else {
-        ratingFieldsContainer.classList.add('hidden');
-    }
+    ratingFieldsContainer.style.display = categorySelect.value === 'Spielplatz' ? '' : 'none';
 });
 
 // Star Rating Interaction
@@ -416,7 +412,5 @@ document.addEventListener('DOMContentLoaded', () => {
     initMap();
     checkAuth();
     // Set initial state
-    if (categorySelect.value === 'Spielplatz') {
-        ratingFieldsContainer.classList.remove('hidden');
-    }
+    ratingFieldsContainer.style.display = categorySelect.value === 'Spielplatz' ? '' : 'none';
 });
