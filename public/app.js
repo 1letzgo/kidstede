@@ -307,6 +307,8 @@ function hidePanels() {
 addPoiBtn.addEventListener('click', () => {
     if (poiPanel.classList.contains('hidden')) {
         hidePanels();
+        poiForm.reset();
+        ratingFieldsContainer.style.display = categorySelect.value === 'Spielplatz' ? '' : 'none';
         poiPanel.classList.remove('hidden');
         addPoiBtn.classList.add('active');
         document.querySelector('.instruction').innerText = "Klicke auf die Karte, um den Standort zu wählen.";
