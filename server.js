@@ -1,4 +1,5 @@
 const express = require('express');
+const session = require('express-session');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -6,6 +7,7 @@ const { getPOIs, addPOI } = require('./database');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'ammerino_admin';
 
 // Ensure upload directory exists
 const uploadDir = path.join(__dirname, 'uploads');
@@ -26,10 +28,44 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'ammerino-secret-key',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { httpOnly: true, maxAge: 8 * 60 * 60 * 1000 } // 8 Stunden
+}));
 app.use(express.static('public'));
 app.use('/uploads', express.static('uploads'));
 
+function requireAuth(req, res, next) {
+    if (req.session && req.session.authenticated) return next();
+    res.status(401).json({ error: 'Nicht angemeldet' });
+}
+
+// Admin Login
+app.get('/admin', (req, res) => {
+    if (req.session && req.session.authenticated) return res.redirect('/');
+    res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+});
+
+app.post('/admin/login', (req, res) => {
+    if (req.body.password === ADMIN_PASSWORD) {
+        req.session.authenticated = true;
+        return res.redirect('/');
+    }
+    res.redirect('/admin?error=1');
+});
+
+app.post('/admin/logout', (req, res) => {
+    req.session.destroy(() => res.redirect('/admin'));
+});
+
 // API Endpoints
+app.get('/api/auth-status', (req, res) => {
+    res.json({ authenticated: !!(req.session && req.session.authenticated) });
+});
+
 app.get('/api/pois', (req, res) => {
     try {
         const pois = getPOIs();
@@ -39,21 +75,21 @@ app.get('/api/pois', (req, res) => {
     }
 });
 
-app.post('/api/pois', upload.single('photo'), (req, res) => {
+app.post('/api/pois', requireAuth, upload.single('photo'), (req, res) => {
     try {
         const { name, description, category, lat, lng, rating_cleanliness, rating_equipment, rating_size, rating_overall } = req.body;
         const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
-        
+
         if (!name || !lat || !lng) {
             return res.status(400).json({ error: 'Name, Latitude and Longitude are required' });
         }
-        
+
         addPOI(
-            name, 
-            description, 
-            category, 
-            parseFloat(lat), 
-            parseFloat(lng), 
+            name,
+            description,
+            category,
+            parseFloat(lat),
+            parseFloat(lng),
             imageUrl,
             rating_cleanliness ? parseInt(rating_cleanliness) : null,
             rating_equipment ? parseInt(rating_equipment) : null,

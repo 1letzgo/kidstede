@@ -106,8 +106,22 @@ body, html, #app {
     transform: rotate(45deg);
 }
 
-.secondary-fab {
+.logout-fab {
     bottom: 100px;
+    right: 20px;
+    background: white;
+    color: var(--text-light);
+    font-size: 1.2rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.logout-fab:hover {
+    transform: scale(1.1);
+    color: var(--accent);
+}
+
+.secondary-fab {
+    bottom: 170px;
     background: white;
     color: var(--primary);
     width: 50px;

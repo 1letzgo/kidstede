@@ -10,6 +10,7 @@ let currentAddingMarker = null;
 
 // DOM Elements
 const addPoiBtn = document.getElementById('add-poi-btn');
+const logoutBtn = document.getElementById('logout-btn');
 const locateBtn = document.getElementById('locate-btn');
 const poiPanel = document.getElementById('poi-panel');
 const detailPanel = document.getElementById('detail-panel');
@@ -254,6 +255,8 @@ poiForm.addEventListener('submit', async (e) => {
             hidePanels();
             loadPOIs();
             alert('Ort erfolgreich hinzugefügt!');
+        } else if (response.status === 401) {
+            window.location.href = '/admin';
         } else {
             const error = await response.json();
             alert('Fehler: ' + error.error);
@@ -305,9 +308,23 @@ document.querySelectorAll('.star-rating .star').forEach(star => {
     });
 });
 
+// Auth
+async function checkAuth() {
+    const res = await fetch('/api/auth-status');
+    const { authenticated } = await res.json();
+    addPoiBtn.style.display = authenticated ? 'flex' : 'none';
+    logoutBtn.style.display = authenticated ? 'flex' : 'none';
+}
+
+logoutBtn.addEventListener('click', async () => {
+    await fetch('/admin/logout', { method: 'POST' });
+    window.location.href = '/admin';
+});
+
 // Init
 document.addEventListener('DOMContentLoaded', () => {
     initMap();
+    checkAuth();
     // Set initial state
     if (categorySelect.value === 'Spielplatz') {
         ratingFieldsContainer.classList.remove('hidden');
