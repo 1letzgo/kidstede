@@ -1,0 +1,101 @@
+# EasyPanel Deployment Schema for vereinfacht/vereinfacht
+# Import this file in EasyPanel under: Project → Settings → Schema
+#
+# Before deploying, replace all CHANGEME_* placeholders:
+#   - CHANGEME_DB_PASSWORD     → a secure random password for MariaDB
+#   - CHANGEME_ROOT_PASSWORD   → a secure random root password for MariaDB
+#   - CHANGEME_APP_KEY         → run `php artisan key:generate --show` to get one
+#   - CHANGEME_BEARER_TOKEN    → get this from the Laravel API after seeding
+#   - CHANGEME_NEXTAUTH_SECRET → any long random string (e.g. `openssl rand -base64 32`)
+#   - YOURDOMAIN.com           → your actual domain configured in EasyPanel
+
+services:
+  # ─── MariaDB ─────────────────────────────────────────────────────────────────
+  - type: mariadb
+    data:
+      projectName: vereinfacht
+      serviceName: database
+      image: mariadb:11.8
+      password: CHANGEME_DB_PASSWORD
+      rootPassword: CHANGEME_ROOT_PASSWORD
+      database: verein
+
+  # ─── Laravel API Backend ─────────────────────────────────────────────────────
+  - type: app
+    data:
+      projectName: vereinfacht
+      serviceName: api
+      source:
+        type: github
+        owner: vereinfacht
+        repo: vereinfacht
+        ref: main
+        path: /
+      build:
+        type: dockerfile
+        dockerfile: docker/api/api.Dockerfile
+      env: |-
+        APP_NAME=Vereinfacht
+        APP_ENV=production
+        APP_KEY=CHANGEME_APP_KEY
+        APP_DEBUG=false
+        APP_URL=https://api.YOURDOMAIN.com
+        LOG_CHANNEL=stack
+        LOG_LEVEL=error
+        DB_CONNECTION=mysql
+        DB_HOST=database
+        DB_PORT=3306
+        DB_DATABASE=verein
+        DB_USERNAME=verein
+        DB_PASSWORD=CHANGEME_DB_PASSWORD
+        CACHE_DRIVER=file
+        FILESYSTEM_DISK=local
+        FILAMENT_FILESYSTEM_DISK=local
+        QUEUE_CONNECTION=sync
+        SESSION_DRIVER=file
+        SESSION_LIFETIME=120
+        MAIL_MAILER=smtp
+        MAIL_HOST=
+        MAIL_PORT=587
+        MAIL_USERNAME=
+        MAIL_PASSWORD=
+        MAIL_ENCRYPTION=tls
+        MAIL_FROM_ADDRESS=hello@YOURDOMAIN.com
+        MAIL_FROM_NAME=Vereinfacht
+        WEB_APPLICATION_URL=https://YOURDOMAIN.com
+        CLUB_ADMIN_LOGIN_PATH=/admin/login
+      domains:
+        - host: api.$(EASYPANEL_DOMAIN)
+          port: 80
+      mounts:
+        - type: volume
+          name: api-storage
+          mountPath: /var/www/html/storage
+
+  # ─── Next.js Web Frontend ────────────────────────────────────────────────────
+  - type: app
+    data:
+      projectName: vereinfacht
+      serviceName: web
+      source:
+        type: github
+        owner: vereinfacht
+        repo: vereinfacht
+        ref: main
+        path: /
+      build:
+        type: dockerfile
+        dockerfile: docker/web_application/web_application.Dockerfile
+      env: |-
+        WEB_APPLICATION_URL=https://YOURDOMAIN.com
+        WEBSITE_URL=https://YOURDOMAIN.com
+        API_DOMAIN=http://api
+        API_PATH=/api/v1
+        API_BEARER_TOKEN=CHANGEME_BEARER_TOKEN
+        NEXTAUTH_SECRET=CHANGEME_NEXTAUTH_SECRET
+        NEXTAUTH_URL=https://YOURDOMAIN.com
+        ADMIN_LOGIN_PATHNAME=/admin/auth/login
+        SUPPORT_EMAIL_ADDRESS=hello@YOURDOMAIN.com
+      domains:
+        - host: $(EASYPANEL_DOMAIN)
+          port: 3000
