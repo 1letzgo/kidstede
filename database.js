@@ -5,6 +5,14 @@ const fs = require('fs');
 const dataDir = process.env.DATA_DIR || '/data';
 if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
 const dbPath = path.join(dataDir, 'database.sqlite');
+
+// Migrate old DB from project root if new location is empty
+const legacyDbPath = path.join(__dirname, 'database.sqlite');
+if (!fs.existsSync(dbPath) && fs.existsSync(legacyDbPath)) {
+    fs.copyFileSync(legacyDbPath, dbPath);
+    console.log('Datenbank von legacy-Pfad nach', dbPath, 'migriert.');
+}
+
 const db = new Database(dbPath);
 
 // Initialize database
