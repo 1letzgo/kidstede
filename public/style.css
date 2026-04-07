@@ -357,6 +357,30 @@ button.primary {
     color: white;
 }
 
+button.danger {
+    background: #e74c3c;
+    color: white;
+}
+
+button.danger:hover {
+    background: #c0392b;
+}
+
+.edit-textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1.5px solid #cde0f5;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    resize: vertical;
+    outline: none;
+}
+
+.edit-textarea:focus {
+    border-color: var(--primary);
+}
+
 button.secondary {
     background: var(--secondary);
     color: var(--text);

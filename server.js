@@ -3,7 +3,7 @@ const session = require('express-session');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const { getPOIs, addPOI } = require('./database');
+const { getPOIs, addPOI, updatePOI, deletePOI } = require('./database');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -97,6 +97,26 @@ app.post('/api/pois', requireAuth, upload.single('photo'), (req, res) => {
             rating_overall ? parseInt(rating_overall) : null
         );
         res.status(201).json({ message: 'POI added successfully' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.patch('/api/pois/:id', requireAuth, (req, res) => {
+    try {
+        const result = updatePOI(req.params.id, req.body.description ?? '');
+        if (result.changes === 0) return res.status(404).json({ error: 'POI nicht gefunden' });
+        res.json({ message: 'Aktualisiert' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.delete('/api/pois/:id', requireAuth, (req, res) => {
+    try {
+        const result = deletePOI(req.params.id);
+        if (result.changes === 0) return res.status(404).json({ error: 'POI nicht gefunden' });
+        res.json({ message: 'Gelöscht' });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

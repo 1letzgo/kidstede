@@ -34,7 +34,17 @@ function addPOI(name, description, category, lat, lng, image_url, ratingCleanlin
     return stmt.run(name, description, category, lat, lng, image_url, ratingCleanliness || null, ratingEquipment || null, ratingSize || null, ratingOverall || null);
 }
 
+function updatePOI(id, description) {
+    return db.prepare('UPDATE pois SET description = ? WHERE id = ?').run(description, id);
+}
+
+function deletePOI(id) {
+    return db.prepare('DELETE FROM pois WHERE id = ?').run(id);
+}
+
 module.exports = {
     getPOIs,
-    addPOI
+    addPOI,
+    updatePOI,
+    deletePOI
 };
