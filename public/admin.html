@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ammerino – Admin Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Outfit', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #e8f4fd 0%, #d6eaf8 100%);
+        }
+        .card {
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.6);
+            border-radius: 20px;
+            padding: 2.5rem 2rem;
+            width: 100%;
+            max-width: 360px;
+            box-shadow: 0 8px 32px rgba(74,144,226,0.12);
+        }
+        h1 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #1a3a5c;
+            margin-bottom: 0.25rem;
+        }
+        .subtitle {
+            font-size: 0.85rem;
+            color: #7a9bbf;
+            margin-bottom: 2rem;
+        }
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #4a6080;
+            margin-bottom: 0.4rem;
+        }
+        input[type="password"] {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1.5px solid #cde0f5;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+            background: #f8fbff;
+        }
+        input[type="password"]:focus { border-color: #4a90e2; }
+        button {
+            width: 100%;
+            margin-top: 1.25rem;
+            padding: 0.8rem;
+            background: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover { background: #357abd; }
+        .error {
+            margin-top: 1rem;
+            padding: 0.65rem 1rem;
+            background: #fdecea;
+            color: #c0392b;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            display: none;
+        }
+        .error.visible { display: block; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Ammerino</h1>
+        <p class="subtitle">Admin-Bereich</p>
+        <form method="POST" action="/admin/login">
+            <label for="password">Passwort</label>
+            <input type="password" id="password" name="password" autofocus required>
+            <div class="error" id="error-msg">Falsches Passwort. Bitte erneut versuchen.</div>
+            <button type="submit">Anmelden</button>
+        </form>
+    </div>
+    <script>
+        if (new URLSearchParams(location.search).get('error')) {
+            document.getElementById('error-msg').classList.add('visible');
+        }
+    </script>
+</body>
+</html>
